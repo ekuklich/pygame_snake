@@ -1,0 +1,133 @@
+import pygame
+import random
+
+if True:
+    x = 200
+    left=False
+    right=False
+    up=False
+    down=False
+    red = (254, 17, 5)
+    white = (254, 254, 255)
+    snake = (70, 230, 50)
+    y = 200
+    score = 0
+    snake_x_h=[x]
+    snake_y_h=[y]
+    snake_y_s=[y]
+    snake_x_s=[x]
+    scale = 20
+    apple_x = random.randint(50, 500)
+    apple_y = random.randint(50, 500)
+    apple_y = apple_y - apple_y % scale + scale // 2
+    ix=0
+    iy=0
+    apple_x = apple_x - apple_x % scale + scale // 2
+    game_over = False
+    rect_apple = pygame.Rect(apple_x - scale // 2, apple_y - scale // 2, scale, scale)
+    rect_snake = pygame.Rect(x, y, scale//2, scale//2)
+pygame.init()
+
+
+def message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    window.blit(mesg, [500 / 2, 500 / 2])
+
+
+window = pygame.display.set_mode((500, 500))
+font_style = pygame.font.SysFont(None, 30)
+pygame.display.update()
+pygame.display.set_caption('Not a game')
+pygame.display.update()
+x1 = 0
+y1 = 0
+window.fill((100,100,100))
+while not game_over:
+    for event in pygame.event.get():
+        print(event)
+        pygame.draw.rect(window, (0, 0, 0), (snake_x_h[ix], snake_y_h[iy], scale, scale))
+        snake_x_s[ix]=-100000
+        snake_y_s[iy]=-100000
+        if event.type == pygame.QUIT:
+            exit()
+            #game_over = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                #x1 = scale
+                right=True
+                left=False
+                up=False
+                down=False
+            if event.key == pygame.K_LEFT:
+                #x1 = -scale
+                right = False
+                left = True
+                up = False
+                down = False
+            if event.key == pygame.K_UP:
+                right = False
+                left = False
+                up = True
+                down = False
+            if event.key == pygame.K_DOWN:
+                #y1 = scale
+                right = False
+                left = False
+                up = False
+                down = True
+            if(right):
+                x1=scale
+            if(left):
+                x1=-scale
+            if(up):
+                y1=-scale
+            if(down):
+                y1=scale
+            x += x1
+            y += y1
+            x1 = 0
+            y1 = 0
+            if (x in snake_x_s and y in snake_y_s):
+                scale = 0
+                message("GAME OWER", white)
+                pygame.draw.rect(window, (0, 0, 0), (x, y, scale, scale))
+                pygame.display.update()
+            while(apple_x in snake_x_s and y in snake_y_s):
+                apple_x=random.randint(50,450)
+                apple_y=random.randint(50,450)
+            if (x > 500 or y > 500 or x < -1 or y < -1):
+                scale = 0
+                message("GAME OWER", white)
+                pygame.draw.rect(window, (0, 0, 0), (x, y, scale, scale))
+                pygame.display.update()
+
+            pygame.draw.circle(window, red, (apple_x, apple_y), scale // 2)
+            snake_x_h.append(x)
+            snake_y_h.append(y)
+            snake_x_s.append(x)
+            snake_y_s.append(y)
+            pygame.display.update()
+            pygame.draw.rect(window, snake, (x, y, scale, scale))
+            pygame.display.update()
+            rect_snake = pygame.Rect(x, y, scale-1, scale-1)
+            pygame.display.update()
+            if (rect_apple.colliderect(rect_snake)):
+                apple_x = random.randint(50, 500)
+                apple_y = random.randint(50, 500)
+                apple_y = apple_y - apple_y % scale + scale // 2
+                apple_x = apple_x - apple_x % scale + scale // 2
+                rect_apple = pygame.Rect(apple_x - scale // 2, apple_y - scale // 2, scale, scale)
+                pygame.display.update()
+                score += 1
+                pygame.draw.circle(window, red, (apple_x, apple_y), scale // 2)
+                pygame.draw.rect(window, (0, 0, 0), (0, 0, 30, 30))
+                pygame.display.update()
+                font_style = pygame.font.SysFont(None, 30)
+                mesg = font_style.render(str(score), True, white)
+                window.blit(mesg, [0, 0])
+            else:
+                ix+=1
+                iy+=1
+            pygame.display.update()
+pygame.quit()
+quit()
